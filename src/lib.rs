@@ -54,7 +54,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_セバスチャン() {
+    fn test_use() {
         assert_eq! {
             セバスチャン_impl(quote!{
                 わたくし std::io::args 様を使わせていただきますわ.
@@ -73,6 +73,29 @@ mod tests {
             }).to_string(),
             quote!{
                 compile_error!{ "予期せぬ識別子ですわ～！: わたし" }
+            }.to_string()
+        };
+    }
+
+    #[test]
+    fn test_fn() {
+        assert_eq! {
+            セバスチャン_impl(quote!{
+                こちらの f 様は,
+                a: i32 と b: &str をお受け取りになって,
+                std::io::Result<()> をお返しになり,
+                以下のことをなさいますのよ. {
+                    writeln!(std::io::stdout(), "a: {}", a)?;
+                    writeln!(std::io::stdout(), "b: {}", b)?;
+                    Ok(())
+                }
+            }).to_string(),
+            quote!{
+                fn f(a: i32, b: &str) -> std::io::Result<()> {
+                    writeln!(std::io::stdout(), "a: {}", a)?;
+                    writeln!(std::io::stdout(), "b: {}", b)?;
+                    Ok(())
+                }
             }.to_string()
         };
     }
