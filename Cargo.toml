@@ -8,6 +8,10 @@ edition = "2021"
 [lib]
 proc-macro = true
 
+[[example]]
+name = "example1"
+src = "examples/example1.rs"
+
 [dependencies]
 proc-macro2 = "1.0.40"
 syn = { version = "1.0.98", features = ["full"] }
