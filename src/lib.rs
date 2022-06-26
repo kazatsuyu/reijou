@@ -1,9 +1,13 @@
-use proc_macro::TokenStream;
+use proc_macro2::TokenStream;
+
+fn セバスチャン_impl(tokens: TokenStream) -> TokenStream {
+    tokens
+}
 
 
 #[proc_macro]
-pub fn セバスチャン(tokens: TokenStream) -> TokenStream {
-    todo!()
+pub fn セバスチャン(tokens: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    セバスチャン_impl(tokens.into()).into()
 }
 
 #[cfg(test)]
@@ -12,6 +16,6 @@ mod tests {
 
     #[test]
     fn test_セバスチャン() {
-        todo!()
+        セバスチャン_impl(TokenStream::new());
     }
 }
