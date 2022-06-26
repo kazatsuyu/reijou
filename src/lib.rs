@@ -2,7 +2,8 @@ use proc_macro2::{Ident, TokenStream};
 use quote::quote;
 use syn::{
     parse::{ParseStream, Parser},
-    Error, Result, Token, UseTree,
+    punctuated::Punctuated,
+    Block, Error, FnArg, Result, Token, Type, UseTree,
 };
 
 fn unexpected_ident<T>(ident: &Ident) -> Result<T> {
@@ -23,15 +24,46 @@ fn expect_ident(input: ParseStream, name: &str) -> Result<Ident> {
 
 fn セバスチャン_parse(input: ParseStream) -> Result<TokenStream> {
     let ident: Ident = input.parse()?;
-    if ident.to_string() == "わたくし" {
-        let tree: UseTree = input.parse()?;
-        expect_ident(input, "様を使わせていただきますわ")?;
-        input.parse::<Token![.]>()?;
-        Ok(quote! {
-            use #tree;
-        })
-    } else {
-        return unexpected_ident(&ident);
+    match ident.to_string().as_str() {
+        "わたくし" => {
+            let tree: UseTree = input.parse()?;
+            expect_ident(input, "様を使わせていただきますわ")?;
+            input.parse::<Token![.]>()?;
+            Ok(quote! {
+                use #tree;
+            })
+        }
+        "こちらの" => {
+            let name: Ident = input.parse()?;
+            expect_ident(input, "様は")?;
+            input.parse::<Token![,]>()?;
+            let mut args = Punctuated::<FnArg, Token![,]>::new();
+            loop {
+                let arg: FnArg = input.parse()?;
+                let ident: Ident = input.parse()?;
+                match ident.to_string().as_str() {
+                    "と" => {
+                        args.push(arg);
+                    }
+                    "をお受け取りになって" => {
+                        args.push(arg);
+                        break;
+                    }
+                    _ => return unexpected_ident(&ident),
+                }
+            }
+            input.parse::<Token![,]>()?;
+            let output: Type = input.parse()?;
+            expect_ident(input, "をお返しになり")?;
+            input.parse::<Token![,]>()?;
+            expect_ident(input, "以下のことをなさいますのよ")?;
+            input.parse::<Token![.]>()?;
+            let block: Block = input.parse()?;
+            Ok(quote! {
+                fn #name (#args) -> #output #block
+            })
+        }
+        _ => return unexpected_ident(&ident),
     }
 }
 
